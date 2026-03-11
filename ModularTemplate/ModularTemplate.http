@@ -1,6 +1,0 @@
-@ModularTemplate_HostAddress = http://localhost:5135
-
-GET {{ModularTemplate_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###

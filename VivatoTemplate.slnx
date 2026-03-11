@@ -1,0 +1,31 @@
+<Solution>
+  <Folder Name="/backend/">
+    <Project Path="backend/VivatoTemplate.Api/VivatoTemplate.Api.csproj" />
+  </Folder>
+  <Folder Name="/frontend/">
+    <File Path="frontend/package.json" />
+    <File Path="frontend/yarn.lock" />
+    <File Path="frontend/vite.config.ts" />
+    <File Path="frontend/tsconfig.json" />
+    <File Path="frontend/index.html" />
+    <Folder Name="/frontend/src/">
+      <File Path="frontend/src/main.tsx" />
+      <File Path="frontend/src/App.tsx" />
+      <File Path="frontend/src/index.css" />
+      <Folder Name="/frontend/src/app/">
+        <File Path="frontend/src/app/providers/AppProviders.tsx" />
+        <File Path="frontend/src/app/layout/AppLayout.tsx" />
+        <File Path="frontend/src/app/routing/RouteContainer.tsx" />
+        <File Path="frontend/src/app/routing/moduleRoutes.tsx" />
+      </Folder>
+      <Folder Name="/frontend/src/contexts/">
+        <File Path="frontend/src/contexts/ApiContext.tsx" />
+        <File Path="frontend/src/contexts/AuthContext.tsx" />
+        <File Path="frontend/src/contexts/UserContext.tsx" />
+        <File Path="frontend/src/contexts/RoleContext.tsx" />
+        <File Path="frontend/src/contexts/ToastContext.tsx" />
+        <File Path="frontend/src/contexts/ThemeContext.tsx" />
+      </Folder>
+    </Folder>
+  </Folder>
+</Solution>
