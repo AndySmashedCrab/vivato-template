@@ -1,4 +1,4 @@
-namespace VivatoTemplate.Api.Infrastructure.DependencyInjection;
+namespace VivatoTemplate.Api.Infrastructure.Logging;
 
 public static class LoggingExtensions
 {

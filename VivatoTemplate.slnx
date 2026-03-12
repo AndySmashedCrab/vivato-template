@@ -1,7 +1,5 @@
 <Solution>
-  <Folder Name="/backend/">
-    <Project Path="backend/VivatoTemplate.Api/VivatoTemplate.Api.csproj" />
-  </Folder>
+  <Folder Name="/backend/" />
   <Folder Name="/frontend/">
     <File Path="frontend/package.json" />
     <File Path="frontend/yarn.lock" />
@@ -28,4 +26,9 @@
       </Folder>
     </Folder>
   </Folder>
+  <Project Path="backend/VivatoTemplate.Api/VivatoTemplate.Api.csproj" />
+  <Project Path="frontend/VivatoTemplate.Web.esproj">
+    <Build />
+    <Deploy />
+  </Project>
 </Solution>
