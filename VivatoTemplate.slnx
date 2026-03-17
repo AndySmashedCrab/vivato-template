@@ -1,10 +1,7 @@
 <Solution>
-  <Folder Name="/.github/" />
-  <Folder Name="/.github/scripts/">
+  <Folder Name="/Solution Items/">
     <File Path=".github/scripts/review-pr.mjs" />
-  </Folder>
-  <Folder Name="/.github/workflows/">
-    <File Path=".github/workflows/ai-pr-review.yml" />
+    <File Path="package.json" />
   </Folder>
   <Project Path="backend/VivatoTemplate.Api/VivatoTemplate.Api.csproj" />
   <Project Path="frontend/VivatoTemplate.Web.esproj">
