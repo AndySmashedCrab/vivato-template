@@ -37,6 +37,7 @@ const RAW_RUNTIME_STATE =
           ["eslint-plugin-react-hooks", "virtual:2549398ac7d23ad60043ea5adae98ac6befb60583a1e3fb7c635a24fb2a8de7c98b9b961910c320f4b18b3d1d22db1ebf14fa7a2b76a8d4c8611f112ffe39851#npm:7.0.1"],\
           ["eslint-plugin-react-refresh", "virtual:2549398ac7d23ad60043ea5adae98ac6befb60583a1e3fb7c635a24fb2a8de7c98b9b961910c320f4b18b3d1d22db1ebf14fa7a2b76a8d4c8611f112ffe39851#npm:0.4.26"],\
           ["globals", "npm:16.5.0"],\
+          ["openai", "virtual:2549398ac7d23ad60043ea5adae98ac6befb60583a1e3fb7c635a24fb2a8de7c98b9b961910c320f4b18b3d1d22db1ebf14fa7a2b76a8d4c8611f112ffe39851#npm:6.31.0"],\
           ["react", "npm:19.2.4"],\
           ["react-dom", "virtual:2549398ac7d23ad60043ea5adae98ac6befb60583a1e3fb7c635a24fb2a8de7c98b9b961910c320f4b18b3d1d22db1ebf14fa7a2b76a8d4c8611f112ffe39851#npm:19.2.4"],\
           ["react-router-dom", "virtual:2549398ac7d23ad60043ea5adae98ac6befb60583a1e3fb7c635a24fb2a8de7c98b9b961910c320f4b18b3d1d22db1ebf14fa7a2b76a8d4c8611f112ffe39851#npm:7.13.1"],\
@@ -2583,6 +2584,32 @@ const RAW_RUNTIME_STATE =
         "linkType": "HARD"\
       }]\
     ]],\
+    ["openai", [\
+      ["npm:6.31.0", {\
+        "packageLocation": "../../../../../AppData/Local/Yarn/Berry/cache/openai-npm-6.31.0-606a289a41-10c0.zip/node_modules/openai/",\
+        "packageDependencies": [\
+          ["openai", "npm:6.31.0"]\
+        ],\
+        "linkType": "SOFT"\
+      }],\
+      ["virtual:2549398ac7d23ad60043ea5adae98ac6befb60583a1e3fb7c635a24fb2a8de7c98b9b961910c320f4b18b3d1d22db1ebf14fa7a2b76a8d4c8611f112ffe39851#npm:6.31.0", {\
+        "packageLocation": "./.yarn/__virtual__/openai-virtual-94b9836e62/6/AppData/Local/Yarn/Berry/cache/openai-npm-6.31.0-606a289a41-10c0.zip/node_modules/openai/",\
+        "packageDependencies": [\
+          ["@types/ws", null],\
+          ["@types/zod", null],\
+          ["openai", "virtual:2549398ac7d23ad60043ea5adae98ac6befb60583a1e3fb7c635a24fb2a8de7c98b9b961910c320f4b18b3d1d22db1ebf14fa7a2b76a8d4c8611f112ffe39851#npm:6.31.0"],\
+          ["ws", null],\
+          ["zod", null]\
+        ],\
+        "packagePeers": [\
+          "@types/ws",\
+          "@types/zod",\
+          "ws",\
+          "zod"\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
     ["optionator", [\
       ["npm:0.9.4", {\
         "packageLocation": "../../../../../AppData/Local/Yarn/Berry/cache/optionator-npm-0.9.4-1f114b00e8-10c0.zip/node_modules/optionator/",\
@@ -3244,6 +3271,7 @@ const RAW_RUNTIME_STATE =
           ["eslint-plugin-react-hooks", "virtual:2549398ac7d23ad60043ea5adae98ac6befb60583a1e3fb7c635a24fb2a8de7c98b9b961910c320f4b18b3d1d22db1ebf14fa7a2b76a8d4c8611f112ffe39851#npm:7.0.1"],\
           ["eslint-plugin-react-refresh", "virtual:2549398ac7d23ad60043ea5adae98ac6befb60583a1e3fb7c635a24fb2a8de7c98b9b961910c320f4b18b3d1d22db1ebf14fa7a2b76a8d4c8611f112ffe39851#npm:0.4.26"],\
           ["globals", "npm:16.5.0"],\
+          ["openai", "virtual:2549398ac7d23ad60043ea5adae98ac6befb60583a1e3fb7c635a24fb2a8de7c98b9b961910c320f4b18b3d1d22db1ebf14fa7a2b76a8d4c8611f112ffe39851#npm:6.31.0"],\
           ["react", "npm:19.2.4"],\
           ["react-dom", "virtual:2549398ac7d23ad60043ea5adae98ac6befb60583a1e3fb7c635a24fb2a8de7c98b9b961910c320f4b18b3d1d22db1ebf14fa7a2b76a8d4c8611f112ffe39851#npm:19.2.4"],\
           ["react-router-dom", "virtual:2549398ac7d23ad60043ea5adae98ac6befb60583a1e3fb7c635a24fb2a8de7c98b9b961910c320f4b18b3d1d22db1ebf14fa7a2b76a8d4c8611f112ffe39851#npm:7.13.1"],\
