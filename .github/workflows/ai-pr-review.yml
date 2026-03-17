@@ -3,10 +3,6 @@ name: AI PR Review
 on:
   pull_request:
     types: [opened, synchronize, reopened]
-    paths:
-      - "src/**"
-      - "VivatoTemplate.Api/**"
-      - ".github/scripts/**"
 
 permissions:
   contents: read
@@ -14,9 +10,12 @@ permissions:
 
 jobs:
   review:
-    # Avoid secrets issues on PRs from forks for v1
     if: github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        shell: bash
 
     steps:
       - name: Checkout
@@ -29,37 +28,33 @@ jobs:
         with:
           node-version: 22
 
-      - name: Install dependencies
-        run: npm ci || npm install
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Install automation dependencies
+        run: yarn install --immutable
 
       - name: Build PR diff
         run: |
-          git diff \
-            -- . \
-            ':(exclude)**/*.lock' \
-            ':(exclude)**/package-lock.json' \
-            ':(exclude)**/pnpm-lock.yaml' \
-            ':(exclude)**/yarn.lock' \
-            ':(exclude)**/dist/**' \
-            ':(exclude)**/build/**' \
-            ':(exclude)**/coverage/**' \
-            > /tmp/changed_files.patch
+          git fetch origin "${{ github.event.pull_request.base.ref }}"
 
-          git diff origin/${{ github.event.pull_request.base.ref }}...HEAD \
+          git diff "origin/${{ github.event.pull_request.base.ref }}...HEAD" \
             -- . \
-            ':(exclude)**/*.lock' \
-            ':(exclude)**/package-lock.json' \
-            ':(exclude)**/pnpm-lock.yaml' \
-            ':(exclude)**/yarn.lock' \
             ':(exclude)**/dist/**' \
             ':(exclude)**/build/**' \
             ':(exclude)**/coverage/**' \
+            ':(exclude)**/node_modules/**' \
+            ':(exclude)**/.yarn/**' \
+            ':(exclude)**/.pnp.cjs' \
+            ':(exclude)**/.pnp.loader.mjs' \
+            ':(exclude)**/package-lock.json' \
+            ':(exclude)**/pnpm-lock.yaml' \
+            ':(exclude)**/yarn.lock' \
             > pr.diff
 
       - name: Run AI review
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
           PR_TITLE: ${{ github.event.pull_request.title }}
@@ -68,19 +63,24 @@ jobs:
           BASE_REF: ${{ github.event.pull_request.base.ref }}
           HEAD_REF: ${{ github.event.pull_request.head.ref }}
         run: node .github/scripts/review-pr.mjs
-      
+
       - name: Post PR comment
         uses: actions/github-script@v7
         with:
           script: |
-            const fs = require('fs');
-            const body = fs.readFileSync('review.md', 'utf8');
+            const fs = require("fs");
+
+            if (!fs.existsSync("review.md")) {
+              core.info("review.md not found, skipping comment.");
+              return;
+            }
+
+            const body = fs.readFileSync("review.md", "utf8");
+            const marker = "<!-- ai-pr-review -->";
+            const fullBody = `${marker}\n${body}`;
 
             const { owner, repo } = context.repo;
             const issue_number = context.issue.number;
-
-            const marker = '<!-- ai-pr-review -->';
-            const fullBody = `${marker}\n${body}`;
 
             const comments = await github.rest.issues.listComments({
               owner,
@@ -90,7 +90,11 @@ jobs:
             });
 
             const existing = comments.data.find(
-              c => c.user?.type === 'Bot' && c.body?.includes(marker)
+              comment =>
+                comment.user &&
+                comment.user.type === "Bot" &&
+                comment.body &&
+                comment.body.includes(marker)
             );
 
             if (existing) {

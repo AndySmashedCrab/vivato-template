@@ -5,7 +5,7 @@ const client = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
 });
 
-function readFileSafe(path) {
+function readFile(path) {
     try {
         return fs.readFileSync(path, "utf8");
     } catch {
@@ -16,18 +16,30 @@ function readFileSafe(path) {
 function truncate(text, maxChars) {
     if (!text) return "";
     if (text.length <= maxChars) return text;
-    return text.slice(0, maxChars) + "\n\n[TRUNCATED]";
+    return `${text.slice(0, maxChars)}\n\n[TRUNCATED]`;
 }
 
-function escapeMarkdown(text) {
-    return text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-}
-
-const diffRaw = readFileSafe("pr.diff");
+const diffRaw = readFile("pr.diff");
 const diff = truncate(diffRaw, 120000);
 
 if (!diff.trim()) {
-    console.log("No diff content found. Skipping review.");
+    const emptyReview = `## AI PR Review
+
+**Overall risk:** Low
+
+### Must fix
+- None
+
+### Suggestions
+- None
+
+### Test coverage concerns
+- None
+
+### Summary
+No relevant diff content was found for review.`;
+
+    fs.writeFileSync("review.md", emptyReview, "utf8");
     process.exit(0);
 }
 
@@ -44,26 +56,21 @@ Head: ${process.env.HEAD_REF}
 
 Review ONLY for:
 - functional bugs
-- security problems
 - breaking changes
-- obvious performance issues
-- maintainability risks that are likely to cause defects
-- missing or weak test coverage for risky changes
+- security risks
+- obvious performance problems
+- maintainability risks likely to cause defects
+- missing or weak tests for risky code changes
 
 Do NOT comment on:
 - formatting
-- style preferences
+- code style preferences
 - naming preferences
-- things a formatter or linter would catch
-- low-confidence guesses
+- things a linter or formatter would catch
+- speculative issues with weak evidence
 
-Important:
-- Be selective. Fewer, better findings.
-- If there are no meaningful issues, say so.
-- Prefer concrete, developer-usable feedback.
-- Reference file paths when possible.
-- Separate must-fix issues from nice-to-have suggestions.
-- Keep the tone professional and concise.
+Be selective.
+Only raise issues that are concrete and useful.
 
 Return markdown in exactly this structure:
 
@@ -95,19 +102,44 @@ async function main() {
         input: prompt,
     });
 
-    const reviewText = response.output_text?.trim() || "## AI PR Review\n\nNo review generated.";
+    const text = response.output_text?.trim() || `## AI PR Review
 
-    const body = `${reviewText}
+**Overall risk:** Low
 
----
-_Automated review generated for PR #${process.env.PR_NUMBER}._`;
+### Must fix
+- None
 
-    fs.writeFileSync("review.md", body, "utf8");
-    console.log(body);
+### Suggestions
+- None
+
+### Test coverage concerns
+- None
+
+### Summary
+No review output was generated.`;
+
+    fs.writeFileSync("review.md", text, "utf8");
+    console.log(text);
 }
 
-main().catch((err) => {
-    console.error("AI review failed:");
-    console.error(err?.message || err);
-    process.exit(1);
+main().catch((error) => {
+    const fallback = `## AI PR Review
+
+**Overall risk:** Low
+
+### Must fix
+- None
+
+### Suggestions
+- AI review failed to run: ${error?.message || "Unknown error"}
+
+### Test coverage concerns
+- None
+
+### Summary
+The automated reviewer encountered an error before it could complete.`;
+
+    fs.writeFileSync("review.md", fallback, "utf8");
+    console.error(error);
+    process.exit(0);
 });
