@@ -33,7 +33,8 @@ jobs:
 
       - name: Install frontend dependencies
         working-directory: ./frontend
-        run: yarn install --immutable
+        run: |
+          yarn install --immutable
 
       - name: Build PR diff
         run: |
@@ -64,7 +65,7 @@ jobs:
           PR_AUTHOR: ${{ github.event.pull_request.user.login }}
           BASE_REF: ${{ github.event.pull_request.base.ref }}
           HEAD_REF: ${{ github.event.pull_request.head.ref }}
-        run: yarn node ../.github/scripts/review-pr.mjs
+        run: node ../.github/scripts/review-pr.mjs
 
       - name: Post PR comment
         uses: actions/github-script@v7
