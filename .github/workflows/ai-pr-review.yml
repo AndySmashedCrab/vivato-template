@@ -34,6 +34,8 @@ jobs:
       - name: Install frontend dependencies
         working-directory: ./frontend
         run: |
+          rm -f .pnp.cjs .pnp.loader.mjs .yarn/install-state.gz
+          rm -rf node_modules
           yarn install --immutable
 
       - name: Build PR diff
