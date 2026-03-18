@@ -19,7 +19,7 @@ function truncate(text, maxChars) {
     return `${text.slice(0, maxChars)}\n\n[TRUNCATED]`;
 }
 
-const diffRaw = readFile("../pr.diff");
+const diffRaw = readFile("../../pr.diff");
 const diff = truncate(diffRaw, 120000);
 
 if (!diff.trim()) {
