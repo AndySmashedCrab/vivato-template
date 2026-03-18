@@ -2082,6 +2082,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"openai@npm:^6.31.0":
+  version: 6.31.0
+  resolution: "openai@npm:6.31.0"
+  peerDependencies:
+    ws: ^8.18.0
+    zod: ^3.25 || ^4.0
+  peerDependenciesMeta:
+    ws:
+      optional: true
+    zod:
+      optional: true
+  bin:
+    openai: bin/cli
+  checksum: 10c0/54ecc23743665c5c8a2c67a0961f903aa16491c9b954b5e514f95fcfec10edffac81cc989f45ac48a438f3638b4f7cd667afb7d5c70cc4593d99833b776304d2
+  languageName: node
+  linkType: hard
+
 "optionator@npm:^0.9.3":
   version: 0.9.4
   resolution: "optionator@npm:0.9.4"
@@ -2664,6 +2681,7 @@ __metadata:
     eslint-plugin-react-hooks: "npm:^7.0.1"
     eslint-plugin-react-refresh: "npm:^0.4.24"
     globals: "npm:^16.5.0"
+    openai: "npm:^6.31.0"
     react: "npm:^19.2.0"
     react-dom: "npm:^19.2.0"
     react-router-dom: "npm:^7.9.5"
