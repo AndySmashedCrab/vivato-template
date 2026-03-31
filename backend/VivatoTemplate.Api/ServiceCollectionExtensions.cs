@@ -1,7 +1,7 @@
-using VivatoTemplate.Api.Infrastructure.ErrorHandling;
-using VivatoTemplate.Api.Infrastructure.Identity;
+using VivatoTemplate.Api.ErrorHandling;
+using VivatoTemplate.Api.Identity;
 
-namespace VivatoTemplate.Api.Infrastructure.DependencyInjection;
+namespace VivatoTemplate.Api;
 
 public static class ServiceCollectionExtensions
 {
@@ -9,6 +9,8 @@ public static class ServiceCollectionExtensions
     {
         services.AddControllers();
         services.AddOpenApi();
+        services.AddEndpointsApiExplorer();
+        services.AddSwaggerGen();
         services.AddPlatformErrorHandling();
         services.AddPlatformIdentity(configuration);
 

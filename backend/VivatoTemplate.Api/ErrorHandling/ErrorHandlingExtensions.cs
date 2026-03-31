@@ -1,4 +1,4 @@
-namespace VivatoTemplate.Api.Infrastructure.ErrorHandling;
+namespace VivatoTemplate.Api.ErrorHandling;
 
 public static class ErrorHandlingExtensions
 {

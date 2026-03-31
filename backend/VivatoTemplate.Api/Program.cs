@@ -1,27 +1,39 @@
-using VivatoTemplate.Api.Infrastructure.DependencyInjection;
-using VivatoTemplate.Api.Infrastructure.ErrorHandling;
-using VivatoTemplate.Api.Infrastructure.Logging;
-using VivatoTemplate.Api.ModuleRegistration;
+using VivatoTemplate.Api.Data;
+using VivatoTemplate.Api.ErrorHandling;
+using VivatoTemplate.Api.Logging;
+using VivatoTemplate.Api.Modules;
 
-var builder = WebApplication.CreateBuilder(args);
+namespace VivatoTemplate.Api;
 
-builder.AddPlatformLogging();
-builder.Services.AddPlatformServices(builder.Configuration);
-builder.Services.AddApplicationModules(builder.Configuration);
-
-var app = builder.Build();
-
-app.UsePlatformErrorHandling();
-
-app.UseHttpsRedirection();
-app.UseAuthentication();
-app.UseAuthorization();
-
-app.MapControllers();
-
-if (app.Environment.IsDevelopment())
+public static class Program
 {
-    app.MapOpenApi();
-}
+    public static async Task Main(string[] args)
+    {
+        var builder = WebApplication.CreateBuilder(args);
 
-app.Run();
+        builder.AddPlatformLogging();
+        builder.Services.AddPlatformServices(builder.Configuration);
+        builder.Services.AddApplicationModules(builder.Configuration);
+
+        var app = builder.Build();
+
+        await SeedData.InitialiseAsync(app.Services, app.Configuration);
+
+        app.UsePlatformErrorHandling();
+
+        app.UseHttpsRedirection();
+        app.UseAuthentication();
+        app.UseAuthorization();
+
+        app.MapControllers();
+
+        if (app.Environment.IsDevelopment())
+        {
+            app.MapOpenApi();
+            app.UseSwagger();
+            app.UseSwaggerUI();
+        }
+
+        await app.RunAsync();
+    }
+}

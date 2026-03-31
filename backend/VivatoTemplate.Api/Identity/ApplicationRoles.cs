@@ -1,4 +1,4 @@
-namespace VivatoTemplate.Api.Infrastructure.Identity;
+namespace VivatoTemplate.Api.Identity;
 
 public static class ApplicationRoles
 {
