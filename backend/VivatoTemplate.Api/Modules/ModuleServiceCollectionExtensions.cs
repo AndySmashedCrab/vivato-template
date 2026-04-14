@@ -1,4 +1,4 @@
-namespace VivatoTemplate.Api.ModuleRegistration;
+namespace VivatoTemplate.Api.Modules;
 
 public static class ModuleServiceCollectionExtensions
 {

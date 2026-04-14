@@ -1,8 +1,4 @@
 <Solution>
-  <Folder Name="/Solution Items/">
-    <File Path=".github/scripts/review-pr.mjs" />
-    <File Path=".github/workflows/ai-pr-review.yml" />
-  </Folder>
   <Project Path="backend/VivatoTemplate.Api/VivatoTemplate.Api.csproj" />
   <Project Path="frontend/VivatoTemplate.Web.esproj">
     <Build />
