@@ -22,6 +22,7 @@ public static class Program
         app.UsePlatformErrorHandling();
 
         app.UseHttpsRedirection();
+        app.UseCors("Frontend");
         app.UseAuthentication();
         app.UseAuthorization();
 
@@ -29,7 +30,6 @@ public static class Program
 
         if (app.Environment.IsDevelopment())
         {
-            app.MapOpenApi();
             app.UseSwagger();
             app.UseSwaggerUI();
         }

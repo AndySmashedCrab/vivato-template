@@ -39,6 +39,11 @@ public class ApplicationUser : IdentityUser
         return new ApplicationUser(email, firstName, lastName, emailConfirmed: true);
     }
 
+    public static ApplicationUser CreateUser(string email, string firstName, string lastName, bool emailConfirmed = true)
+    {
+        return new ApplicationUser(email, firstName, lastName, emailConfirmed);
+    }
+
     public void Activate()
     {
         LockoutEnabled = false;

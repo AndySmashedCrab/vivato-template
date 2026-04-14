@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using VivatoTemplate.Api.Identity;
+using VivatoTemplate.Api.Models;
 
 namespace VivatoTemplate.Api.Controllers;
 
@@ -18,61 +19,61 @@ public sealed class AuthController(
     private readonly JwtOptions _jwtOptions = jwtOptions.Value;
 
     [AllowAnonymous]
-    [HttpPost("login")]
-    public async Task<ActionResult<AuthUserResponse>> Login([FromBody] LoginRequest request)
+    [HttpPost("[action]")]
+    public async Task<IReturnViewModel> Login([FromBody] LoginRequest request)
     {
         DeleteAuthCookies();
 
         var user = await userManager.FindByEmailAsync(request.Email);
         if (user is null)
         {
-            return Unauthorized(new { message = "Invalid email or password." });
+            return new ReturnViewModel(false, "Invalid email or password.");
         }
 
         if (user.IsArchived)
         {
-            return Unauthorized(new { message = "This account is archived." });
+            return new ReturnViewModel(false, "This account is archived.");
         }
 
         var passwordResult = await signInManager.CheckPasswordSignInAsync(user, request.Password, lockoutOnFailure: false);
         if (!passwordResult.Succeeded)
         {
-            return Unauthorized(new { message = "Invalid email or password." });
+            return new ReturnViewModel(false, "Invalid email or password.");
         }
 
         if (!user.EmailConfirmed)
         {
-            return Unauthorized(new { message = "This account must confirm its email before signing in." });
+            return new ReturnViewModel(false, "This account must confirm its email before signing in.");
         }
 
         var response = await IssueTokensAsync(user);
-        return Ok(response);
+        return new ReturnViewModel<AuthUserResponse>(response);
     }
 
     [AllowAnonymous]
-    [HttpPost("refresh")]
-    public async Task<ActionResult<AuthUserResponse>> Refresh()
+    [HttpPost("[action]")]
+    public async Task<IReturnViewModel> Refresh()
     {
         var refreshToken = Request.Cookies[AuthCookieNames.RefreshToken];
         if (string.IsNullOrWhiteSpace(refreshToken))
         {
-            return Unauthorized(new { message = "No refresh token was supplied." });
+            return new ReturnViewModel(false, "No refresh token was supplied.");
         }
 
         var user = await userManager.Users.SingleOrDefaultAsync(x => x.RefreshToken == refreshToken);
         if (user is null || user.RefreshTokenExpiryStamp is null || user.RefreshTokenExpiryStamp <= DateTime.UtcNow)
         {
             DeleteAuthCookies();
-            return Unauthorized(new { message = "Refresh token is invalid or expired." });
+            return new ReturnViewModel(false, "Refresh token is invalid or expired.");
         }
 
         var response = await IssueTokensAsync(user);
-        return Ok(response);
+        return new ReturnViewModel<AuthUserResponse>(response);
     }
 
     [Authorize]
-    [HttpPost("logout")]
-    public async Task<IActionResult> Logout()
+    [HttpPost("[action]")]
+    public async Task<IReturnViewModel> Logout()
     {
         var user = await userManager.GetUserAsync(User);
         if (user is not null)
@@ -82,61 +83,88 @@ public sealed class AuthController(
         }
 
         DeleteAuthCookies();
-        return NoContent();
+        return new ReturnViewModel();
     }
 
     [Authorize]
-    [HttpGet("me")]
-    public async Task<ActionResult<AuthUserResponse>> Me()
+    [HttpGet("[action]")]
+    public async Task<IReturnViewModel> Me()
     {
         var user = await userManager.GetUserAsync(User);
         if (user is null)
         {
-            return Unauthorized();
+            return new ReturnViewModel(false, "User not found.");
         }
 
         var roles = await userManager.GetRolesAsync(user);
-        return Ok(AuthUserResponse.FromUser(user, roles));
+        return new ReturnViewModel<AuthUserResponse>(AuthUserResponse.FromUser(user, roles));
     }
 
     [Authorize]
-    [HttpPost("change-password")]
-    public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
+    [HttpPost("[action]")]
+    public async Task<IReturnViewModel> ChangePassword([FromBody] ChangePasswordRequest request)
     {
         var user = await userManager.GetUserAsync(User);
         if (user is null)
         {
-            return Unauthorized();
+            return new ReturnViewModel(false, "User not found.");
         }
 
         var result = await userManager.ChangePasswordAsync(user, request.CurrentPassword, request.NewPassword);
         if (!result.Succeeded)
         {
-            return BadRequest(new { message = result.Errors.FirstOrDefault()?.Description ?? "Password change failed." });
+            return new ReturnViewModel(false, result.Errors.FirstOrDefault()?.Description ?? "Password change failed.");
         }
 
-        return NoContent();
+        return new ReturnViewModel();
     }
 
     [Authorize]
-    [HttpPost("change-name")]
-    public async Task<ActionResult<AuthUserResponse>> ChangeName([FromBody] ChangeNameRequest request)
+    [HttpPost("[action]")]
+    public async Task<IReturnViewModel> ChangeName([FromBody] ChangeNameRequest request)
     {
         var user = await userManager.GetUserAsync(User);
         if (user is null)
         {
-            return Unauthorized();
+            return new ReturnViewModel(false, "User not found.");
         }
 
         user.UpdateName(request.FirstName, request.LastName);
         var result = await userManager.UpdateAsync(user);
         if (!result.Succeeded)
         {
-            return BadRequest(new { message = result.Errors.FirstOrDefault()?.Description ?? "Name change failed." });
+            return new ReturnViewModel(false, result.Errors.FirstOrDefault()?.Description ?? "Name change failed.");
         }
 
         var roles = await userManager.GetRolesAsync(user);
-        return Ok(AuthUserResponse.FromUser(user, roles));
+        return new ReturnViewModel<AuthUserResponse>(AuthUserResponse.FromUser(user, roles));
+    }
+
+    [Authorize]
+    [HttpPost("[action]")]
+    public async Task<IReturnViewModel> ChangeEmail([FromBody] ChangeEmailRequest request)
+    {
+        var user = await userManager.GetUserAsync(User);
+        if (user is null)
+        {
+            return new ReturnViewModel(false, "User not found.");
+        }
+
+        var existingUser = await userManager.FindByEmailAsync(request.Email);
+        if (existingUser is not null && existingUser.Id != user.Id)
+        {
+            return new ReturnViewModel(false, "That email address is already in use.");
+        }
+
+        user.UpdateEmailAddress(request.Email);
+        var result = await userManager.UpdateAsync(user);
+        if (!result.Succeeded)
+        {
+            return new ReturnViewModel(false, result.Errors.FirstOrDefault()?.Description ?? "Email change failed.");
+        }
+
+        var response = await IssueTokensAsync(user);
+        return new ReturnViewModel<AuthUserResponse>(response);
     }
 
     private async Task<AuthUserResponse> IssueTokensAsync(ApplicationUser user)
@@ -178,6 +206,8 @@ public sealed record LoginRequest(string Email, string Password);
 public sealed record ChangePasswordRequest(string CurrentPassword, string NewPassword);
 
 public sealed record ChangeNameRequest(string FirstName, string LastName);
+
+public sealed record ChangeEmailRequest(string Email);
 
 public sealed record AuthUserResponse(string Id, string Email, string FirstName, string LastName, string FullName, IReadOnlyList<string> Roles)
 {
