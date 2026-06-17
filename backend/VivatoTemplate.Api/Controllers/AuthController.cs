@@ -14,9 +14,30 @@ public sealed class AuthController(
     UserManager<ApplicationUser> userManager,
     SignInManager<ApplicationUser> signInManager,
     IJwtTokenService jwtTokenService,
-    IOptions<JwtOptions> jwtOptions) : ControllerBase
+    IOptions<JwtOptions> jwtOptions,
+    IOptions<IdentityOptions> identityOptions) : ControllerBase
 {
     private readonly JwtOptions _jwtOptions = jwtOptions.Value;
+    private readonly IdentityOptions _identityOptions = identityOptions.Value;
+
+    [AllowAnonymous]
+    [HttpGet("[action]")]
+    public IReturnViewModel GetAuthenticationConfig()
+    {
+        var response = new AuthenticationConfigResponse(
+            UseEmailAsUserName: true,
+            RequiresUserName: false,
+            RequireUniqueEmail: _identityOptions.User.RequireUniqueEmail,
+            Password: new PasswordRequirementsResponse(
+                _identityOptions.Password.RequiredLength,
+                _identityOptions.Password.RequiredUniqueChars,
+                _identityOptions.Password.RequireDigit,
+                _identityOptions.Password.RequireLowercase,
+                _identityOptions.Password.RequireUppercase,
+                _identityOptions.Password.RequireNonAlphanumeric));
+
+        return new ReturnViewModel<AuthenticationConfigResponse>(response);
+    }
 
     [AllowAnonymous]
     [HttpPost("[action]")]
@@ -208,6 +229,20 @@ public sealed record ChangePasswordRequest(string CurrentPassword, string NewPas
 public sealed record ChangeNameRequest(string FirstName, string LastName);
 
 public sealed record ChangeEmailRequest(string Email);
+
+public sealed record PasswordRequirementsResponse(
+    int RequiredLength,
+    int RequiredUniqueChars,
+    bool RequireDigit,
+    bool RequireLowercase,
+    bool RequireUppercase,
+    bool RequireNonAlphanumeric);
+
+public sealed record AuthenticationConfigResponse(
+    bool UseEmailAsUserName,
+    bool RequiresUserName,
+    bool RequireUniqueEmail,
+    PasswordRequirementsResponse Password);
 
 public sealed record AuthUserResponse(string Id, string Email, string FirstName, string LastName, string FullName, IReadOnlyList<string> Roles)
 {

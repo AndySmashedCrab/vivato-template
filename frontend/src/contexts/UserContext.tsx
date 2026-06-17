@@ -8,7 +8,9 @@ import {
 export type UserProfile = {
   id: string
   email: string
-  displayName: string
+  firstName: string
+  lastName: string
+  fullName: string
 }
 
 type UserContextValue = {
